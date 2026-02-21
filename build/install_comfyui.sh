@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-# Clone the repo
-git clone https://github.com/comfyanonymous/ComfyUI.git /ComfyUI
+# Clone the repo and checkout specific version
+git clone --branch ${COMFYUI_VERSION} --depth 1 https://github.com/comfyanonymous/ComfyUI.git /ComfyUI
 cd /ComfyUI
-git checkout ${COMFYUI_VERSION}
 
 # Create and activate the venv
 python3 -m venv --system-site-packages venv
