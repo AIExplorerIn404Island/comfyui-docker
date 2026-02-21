@@ -9,7 +9,7 @@ COPY --chmod=755 build/* ./
 ARG TORCH_VERSION
 ARG XFORMERS_VERSION
 ARG INDEX_URL
-ARG COMFYUI_COMMIT
+ARG COMFYUI_VERSION
 RUN /install_comfyui.sh
 
 # Install Application Manager
@@ -21,6 +21,12 @@ COPY --chmod=755 app-manager/*.sh /app-manager/scripts/
 # Install CivitAI Model Downloader
 ARG CIVITAI_DOWNLOADER_VERSION
 RUN /install_civitai_model_downloader.sh
+
+# Install FastAPI and Uvicorn for remote executor
+RUN pip install --no-cache-dir fastapi uvicorn[standard]
+
+# Copy FastAPI remote executor
+COPY fastapi/remote_executor.py /remote_executor.py
 
 # Cleanup installation scripts
 RUN rm -f /install_*.sh
@@ -42,6 +48,9 @@ ENV VENV_PATH=${VENV_PATH}
 # Copy the scripts
 WORKDIR /
 COPY --chmod=755 scripts/* ./
+
+# Expose FastAPI remote executor port
+EXPOSE 5001
 
 # Start the container
 SHELL ["/bin/bash", "--login", "-c"]

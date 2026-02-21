@@ -139,6 +139,13 @@ else
     echo "SYNC: Existing version is newer than the template version, not syncing!"
 fi
 
+# Start FastAPI Remote Executor on port 5001
+echo "Starting FastAPI Remote Executor on port 5001"
+cd /
+uvicorn remote_executor:app --host 0.0.0.0 --port 5001 > /workspace/logs/remote_executor.log 2>&1 &
+echo "FastAPI Remote Executor started"
+echo "Log file: /workspace/logs/remote_executor.log"
+
 # Start application manager
 cd /app-manager
 npm start > /workspace/logs/app-manager.log 2>&1 &
