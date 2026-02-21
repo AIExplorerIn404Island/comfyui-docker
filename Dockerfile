@@ -23,7 +23,7 @@ ARG CIVITAI_DOWNLOADER_VERSION
 RUN /install_civitai_model_downloader.sh
 
 # Install FastAPI and Uvicorn for remote executor
-RUN pip install --no-cache-dir fastapi uvicorn[standard]
+RUN pip install --no-cache-dir fastapi uvicorn[standard] python-multipart
 
 # Copy FastAPI remote executor
 COPY fastapi/remote_executor.py /remote_executor.py
