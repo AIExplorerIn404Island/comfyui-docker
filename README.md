@@ -62,9 +62,8 @@ Click on the appropriate link below to deploy the template of your choice on Run
 ## Building the Docker image
 
 > [!NOTE]
-> You will need to edit the `docker-bake.hcl` file and update `REGISTRY_USER`,
-> and `RELEASE`.  You can obviously edit the other values too, but these
-> are the most important ones.
+> The `REGISTRY_USER` in `docker-bake.hcl` is set to `techcarbasa`.
+> All 4 build targets share this value. Update it if pushing to a different Docker Hub account.
 
 > [!IMPORTANT]
 > In order to cache the models, you will need at least 32GB of CPU/system
@@ -72,23 +71,37 @@ Click on the appropriate link below to deploy the template of your choice on Run
 > than 32GB of system memory, you can comment out or remove the code in the
 > `Dockerfile` that caches the models.
 
+### Build CUDA 12.4 (for most GPUs: A100, A40, 4090, etc.)
+
+Requires NVIDIA driver >= 525.60. Use this for **non-RTX 5090** GPU types.
+
 ```bash
-# Clone the repo
-git clone https://github.com/ashleykleynhans/comfyui-docker.git
+docker buildx bake -f docker-bake.hcl cu124-py312 --push
+```
 
-# Log in to Docker Hub
-docker login
+This produces: `techcarbasa/comfyui:cu124-py312-v0.14.2`
 
-# Build the default image (CUDA 12.8 and Python 3.12), tag the image, and push the image to Docker Hub
-docker buildx bake -f docker-bake.hcl --push
+### Build CUDA 12.8 (for RTX 5090 / newer drivers)
 
-# OR build a different image (eg. CUDA 12.4 and Python 3.11), tag the image, and push the image to Docker Hub
-docker buildx bake -f docker-bake.hcl cu124-py311 --push
+Requires NVIDIA driver >= 570.x. Use this **only for RTX 5090** GPU types.
 
-# OR build ALL images, tag the images, and push the images to Docker Hub
+```bash
+docker buildx bake -f docker-bake.hcl cu128-py312 --push
+```
+
+This produces: `techcarbasa/comfyui:cu128-py312-v0.14.2`
+
+### Build ALL variants at once
+
+```bash
 docker buildx bake -f docker-bake.hcl all --push
+```
 
-# Same as above but customize registry/user/release:
+This builds all 4 variants (cu124-py311, cu124-py312, cu128-py311, cu128-py312).
+
+### Customize registry/user/release
+
+```bash
 REGISTRY=ghcr.io REGISTRY_USER=myuser RELEASE=my-release docker buildx \
     bake -f docker-bake.hcl --push
 ```
@@ -127,6 +140,7 @@ You can obviously substitute the image name and tag with your own.
 | 8000         | 8000          | Application Manager  |
 | 8888         | 8888          | Jupyter Lab          |
 | 2999         | 2999          | Runpod File Uploader |
+| 5001         | 5001          | FastAPI Remote Executor |
 
 ### Environment Variables
 
@@ -142,9 +156,10 @@ You can obviously substitute the image name and tag with your own.
 ComfyUI creates a log file, and you can tail it instead of
 killing the service to view the logs
 
-| Application | Log file                    |
-|-------------|-----------------------------|
-| ComfyUI     | /workspace/logs/comfyui.log |
+| Application             | Log file                            |
+|-------------------------|-------------------------------------|
+| ComfyUI                 | /workspace/logs/comfyui.log         |
+| FastAPI Remote Executor | /workspace/logs/remote_executor.log |
 
 ## Community and Contributing
 
