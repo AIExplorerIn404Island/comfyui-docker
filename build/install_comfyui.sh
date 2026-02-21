@@ -9,7 +9,7 @@ if [ -z "${COMFYUI_VERSION}" ]; then
 fi
 
 # Clone the repo and checkout specific version
-git clone --branch "${COMFYUI_VERSION}" --depth 1 https://github.com/comfyanonymous/ComfyUI.git /ComfyUI
+git clone --branch "${COMFYUI_VERSION}" --depth 1 https://github.com/Comfy-Org/ComfyUI.git /ComfyUI
 cd /ComfyUI
 echo "=== Checked out ComfyUI version: $(git describe --tags 2>/dev/null || git rev-parse --short HEAD) ==="
 
