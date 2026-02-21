@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
 set -e
 
+echo "=== COMFYUI_VERSION: ${COMFYUI_VERSION} ==="
+
+if [ -z "${COMFYUI_VERSION}" ]; then
+    echo "ERROR: COMFYUI_VERSION is not set!"
+    exit 1
+fi
+
 # Clone the repo and checkout specific version
-git clone --branch ${COMFYUI_VERSION} --depth 1 https://github.com/comfyanonymous/ComfyUI.git /ComfyUI
+git clone --branch "${COMFYUI_VERSION}" --depth 1 https://github.com/comfyanonymous/ComfyUI.git /ComfyUI
 cd /ComfyUI
+echo "=== Checked out ComfyUI version: $(git describe --tags 2>/dev/null || git rev-parse --short HEAD) ==="
 
 # Create and activate the venv
 python3 -m venv --system-site-packages venv
